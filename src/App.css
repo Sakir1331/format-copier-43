@@ -2,12 +2,12 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: right;
+  text-align: center;
 }
 
 /* RTL Support */
 [dir="rtl"] {
-  text-align: right;
+  text-align: center;
 }
 
 [dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
@@ -48,4 +48,9 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Center align table content */
+.table-cell-center {
+  text-align: center !important;
 }

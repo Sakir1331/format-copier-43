@@ -5,6 +5,6 @@ export interface Product {
   customType?: string;
   quantity: number;
   bags: number;
-  size?: number;
+  size?: string | number;
   location?: string;
 }

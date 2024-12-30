@@ -22,20 +22,20 @@ export default function ProductTableRow({ product, updateProduct, deleteProduct 
 
   return (
     <TableRow className={cn(getRowColor(product.quantity))}>
-      <TableCell>
+      <TableCell className="text-center">
         <Input
           value={product.name}
           onChange={(e) => updateProduct(product.id, "name", e.target.value)}
-          className="w-full"
+          className="w-full text-center"
           placeholder="اسم المنتج"
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="text-center">
         {product.type === "custom" ? (
           <Input
             value={product.customType || ""}
             onChange={(e) => updateProduct(product.id, "customType", e.target.value)}
-            className="w-full"
+            className="w-full text-center"
             placeholder="نوع مخصص"
           />
         ) : (
@@ -43,7 +43,7 @@ export default function ProductTableRow({ product, updateProduct, deleteProduct 
             value={product.type}
             onValueChange={(value) => updateProduct(product.id, "type", value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="text-center">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -57,8 +57,8 @@ export default function ProductTableRow({ product, updateProduct, deleteProduct 
           </Select>
         )}
       </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
+      <TableCell className="text-center">
+        <div className="flex items-center justify-center gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -99,8 +99,8 @@ export default function ProductTableRow({ product, updateProduct, deleteProduct 
           </TooltipProvider>
         </div>
       </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
+      <TableCell className="text-center">
+        <div className="flex items-center justify-center gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -141,24 +141,23 @@ export default function ProductTableRow({ product, updateProduct, deleteProduct 
           </TooltipProvider>
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="text-center">
         <Input
-          type="number"
           value={product.size || ""}
-          onChange={(e) => updateProduct(product.id, "size", Number(e.target.value))}
-          className="w-20"
+          onChange={(e) => updateProduct(product.id, "size", e.target.value)}
+          className="w-20 text-center"
           placeholder="الحجم"
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="text-center">
         <Input
           value={product.location || ""}
           onChange={(e) => updateProduct(product.id, "location", e.target.value)}
-          className="w-full"
+          className="w-full text-center"
           placeholder="الموقع"
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="text-center">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

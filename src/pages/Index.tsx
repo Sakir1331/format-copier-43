@@ -5,16 +5,17 @@ import "@fontsource/tajawal";
 import ProductTable from "@/components/ProductTable";
 import { Product } from "@/types/product";
 import { formatFinalText } from "@/utils/textFormatter";
-import { Copy, Plus, Sun, Moon } from "lucide-react";
+import { Copy, Plus, Sun, Moon, ArrowDownAZ, ArrowDownWideNarrow, ArrowUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { defaultProducts } from "@/data/defaultProducts";
 
 export default function Index() {
   const [products, setProducts] = useState<Product[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("products");
-      return saved ? JSON.parse(saved) : [];
+      return saved ? JSON.parse(saved) : defaultProducts;
     }
-    return [];
+    return defaultProducts;
   });
   
   const [darkMode, setDarkMode] = useState(() => {
@@ -23,6 +24,8 @@ export default function Index() {
     }
     return false;
   });
+
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   
   const { toast } = useToast();
 
@@ -83,7 +86,9 @@ export default function Index() {
   };
 
   const sortByQuantity = () => {
-    const sorted = [...products].sort((a, b) => a.quantity - b.quantity);
+    const sorted = [...products].sort((a, b) => 
+      sortDirection === "asc" ? a.quantity - b.quantity : b.quantity - a.quantity
+    );
     setProducts(sorted);
     toast({
       title: "تم الترتيب",
@@ -92,7 +97,11 @@ export default function Index() {
   };
 
   const sortByName = () => {
-    const sorted = [...products].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+    const sorted = [...products].sort((a, b) => 
+      sortDirection === "asc" 
+        ? a.name.localeCompare(b.name, 'ar')
+        : b.name.localeCompare(a.name, 'ar')
+    );
     setProducts(sorted);
     toast({
       title: "تم الترتيب",
@@ -100,10 +109,37 @@ export default function Index() {
     });
   };
 
+  const toggleSortDirection = () => {
+    setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+    toast({
+      title: "تم تغيير اتجاه الترتيب",
+      description: sortDirection === "asc" ? "الترتيب تنازلي" : "الترتيب تصاعدي",
+    });
+  };
+
   return (
     <div dir="rtl" className="container mx-auto p-4 font-[Tajawal]">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">إدارة المخزون</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold">إدارة المخزون</h1>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={toggleSortDirection}
+                  className="rounded-full"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>عكس اتجاه الترتيب</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
