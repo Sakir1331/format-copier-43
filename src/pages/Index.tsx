@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,13 +8,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import "@fontsource/tajawal";
 
 interface Product {
   id: string;
   name: string;
-  type: "كرتون" | "كيس" | "شوال" | "كيلو";
+  type: "كرتون" | "كيس" | "شوال" | "كيلو" | "شدة";
   quantity: number;
   bags: number;
   size?: number;
@@ -22,14 +24,29 @@ interface Product {
 }
 
 export default function Index() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("products");
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+  
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("darkMode") === "true";
     }
     return false;
   });
+  
   const { toast } = useToast();
+
+  // Save products to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("products", JSON.stringify(products));
+    }
+  }, [products]);
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -39,6 +56,41 @@ export default function Index() {
       localStorage.setItem("darkMode", String(newMode));
       document.documentElement.classList.toggle("dark", newMode);
     }
+  };
+
+  // Add new product
+  const addProduct = () => {
+    const newProduct: Product = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: "",
+      type: "كرتون",
+      quantity: 0,
+      bags: 0,
+    };
+    setProducts([...products, newProduct]);
+    toast({
+      title: "تمت الإضافة",
+      description: "تم إضافة منتج جديد",
+    });
+  };
+
+  // Update product
+  const updateProduct = (id: string, field: keyof Product, value: any) => {
+    setProducts(products.map(product => {
+      if (product.id === id) {
+        return { ...product, [field]: value };
+      }
+      return product;
+    }));
+  };
+
+  // Delete product
+  const deleteProduct = (id: string) => {
+    setProducts(products.filter(p => p.id !== id));
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف المنتج بنجاح",
+    });
   };
 
   // Copy final text
@@ -54,9 +106,7 @@ export default function Index() {
         if (product.quantity > 0) {
           text += `${product.quantity} ${product.type}`;
           if (product.bags > 0) {
-            text += ` و ${product.bags} ${
-              product.bags > 10 ? "اكياس" : "كيس"
-            }`;
+            text += ` و ${product.bags} ${product.bags > 10 ? "اكياس" : "كيس"}`;
           }
         } else if (product.bags > 0) {
           text += `${product.bags} ${product.bags > 10 ? "اكياس" : "كيس"}`;
@@ -107,23 +157,98 @@ export default function Index() {
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.type}</TableCell>
-                <TableCell>{product.quantity}</TableCell>
-                <TableCell>{product.bags}</TableCell>
-                <TableCell>{product.size || "-"}</TableCell>
-                <TableCell>{product.location || "-"}</TableCell>
+                <TableCell>
+                  <Input
+                    value={product.name}
+                    onChange={(e) => updateProduct(product.id, "name", e.target.value)}
+                    className="w-full"
+                  />
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={product.type}
+                    onValueChange={(value) => updateProduct(product.id, "type", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="كرتون">كرتون</SelectItem>
+                      <SelectItem value="كيس">كيس</SelectItem>
+                      <SelectItem value="شوال">شوال</SelectItem>
+                      <SelectItem value="كيلو">كيلو</SelectItem>
+                      <SelectItem value="شدة">شدة</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateProduct(product.id, "quantity", product.quantity + 1)}
+                    >
+                      +
+                    </Button>
+                    <Input
+                      type="number"
+                      value={product.quantity}
+                      onChange={(e) => updateProduct(product.id, "quantity", Number(e.target.value))}
+                      className="w-20 text-center"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateProduct(product.id, "quantity", Math.max(0, product.quantity - 1))}
+                    >
+                      -
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateProduct(product.id, "bags", product.bags + 1)}
+                    >
+                      +
+                    </Button>
+                    <Input
+                      type="number"
+                      value={product.bags}
+                      onChange={(e) => updateProduct(product.id, "bags", Number(e.target.value))}
+                      className="w-20 text-center"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateProduct(product.id, "bags", Math.max(0, product.bags - 1))}
+                    >
+                      -
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Input
+                    type="number"
+                    value={product.size || ""}
+                    onChange={(e) => updateProduct(product.id, "size", Number(e.target.value))}
+                    className="w-20"
+                  />
+                </TableCell>
+                <TableCell>
+                  <Input
+                    value={product.location || ""}
+                    onChange={(e) => updateProduct(product.id, "location", e.target.value)}
+                    className="w-full"
+                  />
+                </TableCell>
                 <TableCell>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => {
-                      setProducts(products.filter((p) => p.id !== product.id));
-                      toast({
-                        title: "تم الحذف",
-                        description: "تم حذف المنتج بنجاح",
-                      });
-                    }}
+                    onClick={() => deleteProduct(product.id)}
                   >
                     🗑️
                   </Button>
@@ -143,20 +268,7 @@ export default function Index() {
           📋
         </Button>
         <Button
-          onClick={() => {
-            const newProduct: Product = {
-              id: Math.random().toString(36).substr(2, 9),
-              name: "",
-              type: "كرتون",
-              quantity: 0,
-              bags: 0,
-            };
-            setProducts([...products, newProduct]);
-            toast({
-              title: "تمت الإضافة",
-              description: "تم إضافة منتج جديد",
-            });
-          }}
+          onClick={addProduct}
           className="rounded-full shadow-lg"
           size="icon"
         >
