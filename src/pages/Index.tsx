@@ -4,45 +4,26 @@ import { useToast } from "@/hooks/use-toast";
 import "@fontsource/tajawal";
 import ProductTable from "@/components/ProductTable";
 import { Product } from "@/types/product";
-import { formatFinalText } from "@/utils/textFormatter";
+import { formatFinalText } from "@/utils/formatter";
+import { loadProducts, saveProducts, loadDarkMode, saveDarkMode } from "@/utils/storage";
 import { Copy, Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { defaultProducts } from "@/data/defaultProducts";
 import HeaderActions from "@/components/HeaderActions";
 
 export default function Index() {
-  const [products, setProducts] = useState<Product[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("products");
-      return saved ? JSON.parse(saved) : defaultProducts;
-    }
-    return defaultProducts;
-  });
-  
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("darkMode") === "true";
-    }
-    return false;
-  });
-
+  const [products, setProducts] = useState<Product[]>(loadProducts);
+  const [darkMode, setDarkMode] = useState(loadDarkMode);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  
   const { toast } = useToast();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("products", JSON.stringify(products));
-    }
+    saveProducts(products);
   }, [products]);
 
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("darkMode", String(newMode));
-      document.documentElement.classList.toggle("dark", newMode);
-    }
+    saveDarkMode(newMode);
   };
 
   const addProduct = () => {
@@ -113,7 +94,6 @@ export default function Index() {
   const toggleSortDirection = () => {
     setSortDirection(prev => {
       const newDirection = prev === "asc" ? "desc" : "asc";
-      // إعادة ترتيب المنتجات الحالية بناءً على الاتجاه الجديد
       const currentProducts = [...products];
       const sorted = currentProducts.reverse();
       setProducts(sorted);
