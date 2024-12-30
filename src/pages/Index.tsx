@@ -5,6 +5,8 @@ import "@fontsource/tajawal";
 import ProductTable from "@/components/ProductTable";
 import { Product } from "@/types/product";
 import { formatFinalText } from "@/utils/textFormatter";
+import { Copy, Plus, Sun, Moon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Index() {
   const [products, setProducts] = useState<Product[]>(() => {
@@ -84,14 +86,23 @@ export default function Index() {
     <div dir="rtl" className="container mx-auto p-4 font-[Tajawal]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">إدارة المخزون</h1>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleDarkMode}
-          className="rounded-full"
-        >
-          {darkMode ? "🌞" : "🌙"}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={toggleDarkMode}
+                className="rounded-full"
+              >
+                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{darkMode ? "الوضع النهاري" : "الوضع الليلي"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <ProductTable
@@ -100,21 +111,42 @@ export default function Index() {
         deleteProduct={deleteProduct}
       />
 
-      <div className="fixed bottom-4 left-4 space-x-2 rtl:space-x-reverse">
-        <Button
-          onClick={copyFinalText}
-          className="rounded-full shadow-lg"
-          size="icon"
-        >
-          📋
-        </Button>
-        <Button
-          onClick={addProduct}
-          className="rounded-full shadow-lg"
-          size="icon"
-        >
-          ➕
-        </Button>
+      <div className="fixed bottom-4 right-4 flex flex-col gap-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={copyFinalText}
+                className="rounded-full shadow-lg"
+                size="icon"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>نسخ النص النهائي</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="fixed bottom-4 left-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={addProduct}
+                className="rounded-full shadow-lg"
+                size="icon"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>إضافة منتج جديد</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

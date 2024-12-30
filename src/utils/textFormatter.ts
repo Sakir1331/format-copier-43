@@ -6,9 +6,10 @@ export function formatProductText(product: Product): string {
   }
 
   let text = product.name;
+  const type = product.type === "custom" ? product.customType : product.type;
 
   if (product.quantity > 0) {
-    text += ` ${product.quantity} ${product.type}`;
+    text += ` ${product.quantity} ${type}`;
     if (product.bags > 0) {
       text += ` و ${product.bags} ${product.bags > 10 ? "اكياس" : "كيس"}`;
     }
