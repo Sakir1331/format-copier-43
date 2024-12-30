@@ -5,9 +5,10 @@ import "@fontsource/tajawal";
 import ProductTable from "@/components/ProductTable";
 import { Product } from "@/types/product";
 import { formatFinalText } from "@/utils/textFormatter";
-import { Copy, Plus, Sun, Moon, ArrowDownAZ, ArrowDownWideNarrow, ArrowUpDown } from "lucide-react";
+import { Copy, Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { defaultProducts } from "@/data/defaultProducts";
+import HeaderActions from "@/components/HeaderActions";
 
 export default function Index() {
   const [products, setProducts] = useState<Product[]>(() => {
@@ -110,10 +111,19 @@ export default function Index() {
   };
 
   const toggleSortDirection = () => {
-    setSortDirection(prev => prev === "asc" ? "desc" : "asc");
-    toast({
-      title: "تم تغيير اتجاه الترتيب",
-      description: sortDirection === "asc" ? "الترتيب تنازلي" : "الترتيب تصاعدي",
+    setSortDirection(prev => {
+      const newDirection = prev === "asc" ? "desc" : "asc";
+      // إعادة ترتيب المنتجات الحالية بناءً على الاتجاه الجديد
+      const currentProducts = [...products];
+      const sorted = currentProducts.reverse();
+      setProducts(sorted);
+      
+      toast({
+        title: "تم تغيير اتجاه الترتيب",
+        description: newDirection === "asc" ? "الترتيب تصاعدي" : "الترتيب تنازلي",
+      });
+      
+      return newDirection;
     });
   };
 
@@ -122,41 +132,12 @@ export default function Index() {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">إدارة المخزون</h1>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={toggleSortDirection}
-                  className="rounded-full"
-                >
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>عكس اتجاه الترتيب</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={toggleDarkMode}
-                className="rounded-full"
-              >
-                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{darkMode ? "الوضع النهاري" : "الوضع الليلي"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <HeaderActions 
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+          toggleSortDirection={toggleSortDirection}
+        />
       </div>
 
       <ProductTable
@@ -173,7 +154,7 @@ export default function Index() {
             <TooltipTrigger asChild>
               <Button
                 onClick={copyFinalText}
-                className="rounded-full shadow-lg"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
                 size="icon"
               >
                 <Copy className="h-4 w-4" />
@@ -192,7 +173,7 @@ export default function Index() {
             <TooltipTrigger asChild>
               <Button
                 onClick={addProduct}
-                className="rounded-full shadow-lg"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
                 size="icon"
               >
                 <Plus className="h-4 w-4" />
