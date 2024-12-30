@@ -1,42 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>إدارة المخزون</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>إدارة المخزون</h1>
-            <div class="header-actions">
-                <button id="sortByName">ترتيب حسب الاسم</button>
-                <button id="sortByQuantity">ترتيب حسب الكمية</button>
-                <button id="copyText">نسخ النص</button>
-                <button id="addProduct">إضافة منتج</button>
-            </div>
-        </header>
-
-        <main>
-            <table id="productsTable">
-                <thead>
-                    <tr>
-                        <th>الاسم</th>
-                        <th>النوع</th>
-                        <th>الكمية</th>
-                        <th>الأكياس</th>
-                        <th>الحجم</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="productsBody"></tbody>
-            </table>
-        </main>
-
-        <div id="toast" class="toast"></div>
-    </div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script src="script.js"></script>
-</body>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
 </html>
