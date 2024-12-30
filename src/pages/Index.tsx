@@ -1,27 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import "@fontsource/tajawal";
-
-interface Product {
-  id: string;
-  name: string;
-  type: "كرتون" | "كيس" | "شوال" | "كيلو" | "شدة";
-  quantity: number;
-  bags: number;
-  size?: number;
-  location?: string;
-}
+import ProductTable from "@/components/ProductTable";
+import { Product } from "@/types/product";
+import { formatFinalText } from "@/utils/textFormatter";
 
 export default function Index() {
   const [products, setProducts] = useState<Product[]>(() => {
@@ -41,14 +24,12 @@ export default function Index() {
   
   const { toast } = useToast();
 
-  // Save products to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("products", JSON.stringify(products));
     }
   }, [products]);
 
-  // Toggle dark mode
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
@@ -58,7 +39,6 @@ export default function Index() {
     }
   };
 
-  // Add new product
   const addProduct = () => {
     const newProduct: Product = {
       id: Math.random().toString(36).substr(2, 9),
@@ -74,7 +54,6 @@ export default function Index() {
     });
   };
 
-  // Update product
   const updateProduct = (id: string, field: keyof Product, value: any) => {
     setProducts(products.map(product => {
       if (product.id === id) {
@@ -84,7 +63,6 @@ export default function Index() {
     }));
   };
 
-  // Delete product
   const deleteProduct = (id: string) => {
     setProducts(products.filter(p => p.id !== id));
     toast({
@@ -93,33 +71,8 @@ export default function Index() {
     });
   };
 
-  // Copy final text
   const copyFinalText = () => {
-    const text = products
-      .map((product) => {
-        let text = `${product.name} `;
-        
-        if (product.quantity === 0 && product.bags === 0) {
-          return `${product.name} 0`;
-        }
-
-        if (product.quantity > 0) {
-          text += `${product.quantity} ${product.type}`;
-          if (product.bags > 0) {
-            text += ` و ${product.bags} ${product.bags > 10 ? "اكياس" : "كيس"}`;
-          }
-        } else if (product.bags > 0) {
-          text += `${product.bags} ${product.bags > 10 ? "اكياس" : "كيس"}`;
-        }
-
-        if (product.size) {
-          text += ` رقم ${product.size}`;
-        }
-
-        return text;
-      })
-      .join("\n");
-
+    const text = formatFinalText(products);
     navigator.clipboard.writeText(text);
     toast({
       title: "تم النسخ",
@@ -141,123 +94,11 @@ export default function Index() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-right">المنتج</TableHead>
-              <TableHead className="text-right">النوع</TableHead>
-              <TableHead className="text-right">الكمية</TableHead>
-              <TableHead className="text-right">الأكياس</TableHead>
-              <TableHead className="text-right">الحجم</TableHead>
-              <TableHead className="text-right">الموقع</TableHead>
-              <TableHead className="text-right">الإجراءات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Input
-                    value={product.name}
-                    onChange={(e) => updateProduct(product.id, "name", e.target.value)}
-                    className="w-full"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Select
-                    value={product.type}
-                    onValueChange={(value) => updateProduct(product.id, "type", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="كرتون">كرتون</SelectItem>
-                      <SelectItem value="كيس">كيس</SelectItem>
-                      <SelectItem value="شوال">شوال</SelectItem>
-                      <SelectItem value="كيلو">كيلو</SelectItem>
-                      <SelectItem value="شدة">شدة</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateProduct(product.id, "quantity", product.quantity + 1)}
-                    >
-                      +
-                    </Button>
-                    <Input
-                      type="number"
-                      value={product.quantity}
-                      onChange={(e) => updateProduct(product.id, "quantity", Number(e.target.value))}
-                      className="w-20 text-center"
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateProduct(product.id, "quantity", Math.max(0, product.quantity - 1))}
-                    >
-                      -
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateProduct(product.id, "bags", product.bags + 1)}
-                    >
-                      +
-                    </Button>
-                    <Input
-                      type="number"
-                      value={product.bags}
-                      onChange={(e) => updateProduct(product.id, "bags", Number(e.target.value))}
-                      className="w-20 text-center"
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateProduct(product.id, "bags", Math.max(0, product.bags - 1))}
-                    >
-                      -
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Input
-                    type="number"
-                    value={product.size || ""}
-                    onChange={(e) => updateProduct(product.id, "size", Number(e.target.value))}
-                    className="w-20"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Input
-                    value={product.location || ""}
-                    onChange={(e) => updateProduct(product.id, "location", e.target.value)}
-                    className="w-full"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteProduct(product.id)}
-                  >
-                    🗑️
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <ProductTable
+        products={products}
+        updateProduct={updateProduct}
+        deleteProduct={deleteProduct}
+      />
 
       <div className="fixed bottom-4 left-4 space-x-2 rtl:space-x-reverse">
         <Button
