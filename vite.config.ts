@@ -13,19 +13,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
-  base: './',
-  build: {
-    outDir: 'sakir',
-    emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-        entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]'
-      }
-    }
-  },
+  base: '/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
