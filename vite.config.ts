@@ -13,16 +13,16 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
-  base: './', // هذا سيجعل المسارات نسبية
+  base: './',
   build: {
-    outDir: 'k', // سيتم إنشاء المجلد k
+    outDir: 'sakir',
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: undefined, // لتجنب تقسيم الملفات
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
+        manualChunks: undefined,
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+        assetFileNames: '[name].[ext]'
       }
     }
   },
