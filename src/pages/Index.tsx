@@ -82,6 +82,24 @@ export default function Index() {
     });
   };
 
+  const sortByQuantity = () => {
+    const sorted = [...products].sort((a, b) => a.quantity - b.quantity);
+    setProducts(sorted);
+    toast({
+      title: "تم الترتيب",
+      description: "تم ترتيب المنتجات حسب الكمية",
+    });
+  };
+
+  const sortByName = () => {
+    const sorted = [...products].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+    setProducts(sorted);
+    toast({
+      title: "تم الترتيب",
+      description: "تم ترتيب المنتجات حسب الأبجدية",
+    });
+  };
+
   return (
     <div dir="rtl" className="container mx-auto p-4 font-[Tajawal]">
       <div className="flex justify-between items-center mb-6">
@@ -109,6 +127,8 @@ export default function Index() {
         products={products}
         updateProduct={updateProduct}
         deleteProduct={deleteProduct}
+        onSortByQuantity={sortByQuantity}
+        onSortByName={sortByName}
       />
 
       <div className="fixed bottom-4 right-4 flex flex-col gap-2">
